@@ -1,4 +1,8 @@
 <?php
+namespace Azt3k\SS\Taggable;
+use Azt3k\SS\Classes\AbcPaginator;
+use SilverStripe\Control\Director;
+use Azt3k\SS\Taggable\Taggable;
 class TagPage extends Page {
 
 	private static $allowed_children = 'none';

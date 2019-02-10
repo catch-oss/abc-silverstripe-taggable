@@ -1,4 +1,6 @@
 <?php
+namespace Azt3k\SS\Taggable;
+use SilverStripe\ORM\DataObject;
 
 class Tag extends DataObject {
 

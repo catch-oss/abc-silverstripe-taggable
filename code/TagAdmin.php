@@ -1,4 +1,6 @@
 <?php
+namespace Azt3k\SS\Taggable;
+use SilverStripe\Admin\ModelAdmin;
 
 class TagAdmin extends ModelAdmin {
 

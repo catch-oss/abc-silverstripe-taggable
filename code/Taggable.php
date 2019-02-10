@@ -1,4 +1,10 @@
 <?php
+namespace Azt3k\SS\Taggable;
+use Azt3k\SS\Classes\AbcDB;
+use SilverStripe\Forms\FieldList;
+use Azt3k\SS\Classes\DataObjectHelper;
+use SilverStripe\Assets\Image;
+use SilverStripe\ORM\DataObject;
 
 class Taggable extends DataExtension {
 
