@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Azt3k\\SS\\Taggable": "code/"
+            "Azt3k\\SS\\Taggable\\": "code/"
         }
     }
 }
