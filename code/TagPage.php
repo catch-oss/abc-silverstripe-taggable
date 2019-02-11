@@ -9,7 +9,7 @@ class TagPage extends Sitetree {
 
 	private static $allowed_children = 'none';
 
-	public static $icon = 'abc-silverstripe-taggable/assets/build/img/icons/tags-page';
+	private static $icon = 'abc-silverstripe-taggable/assets/build/img/icons/tags-page';
 
 	public function getCMSFields() {
 
