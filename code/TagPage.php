@@ -38,13 +38,13 @@ class TagPage_Controller extends Controller {
 	 *
 	 * @var array
 	 */
-	public static $allowed_actions = array (
+	private static $allowed_actions = array (
 		'tag'
 	);
 
-	public function init() {
-		parent::init();
-	}
+	// public function init() {
+	// 	parent::init();
+	// }
 
 
 	/*
