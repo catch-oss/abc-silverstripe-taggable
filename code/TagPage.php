@@ -3,7 +3,9 @@ namespace Azt3k\SS\Taggable;
 use Azt3k\SS\Classes\AbcPaginator;
 use SilverStripe\Control\Director;
 use Azt3k\SS\Taggable\Taggable;
-class TagPage extends Page {
+use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Controller;
+class TagPage extends Sitetree {
 
 	private static $allowed_children = 'none';
 
@@ -19,7 +21,7 @@ class TagPage extends Page {
 
 }
 
-class TagPage_Controller extends Page_Controller {
+class TagPage_Controller extends Controller {
 
 	/**
 	 * An array of actions that can be accessed via a request. Each array element should be an action name, and the

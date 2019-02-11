@@ -1,6 +1,7 @@
 <?php
 namespace Azt3k\SS\Taggable;
 use SilverStripe\View\Requirements;
+use SilverStripe\Forms\TextField;
 
 class TagField extends TextField {
 
