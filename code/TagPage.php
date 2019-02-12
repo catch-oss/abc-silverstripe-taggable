@@ -6,7 +6,7 @@ use Azt3k\SS\Taggable\Taggable;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
 class TagPage extends Sitetree {
-
+	private static $table_name = 'TagPage';
 	private static $allowed_children = 'none';
 
 	private static $icon = 'abc-silverstripe-taggable/assets/build/img/icons/tags-page';

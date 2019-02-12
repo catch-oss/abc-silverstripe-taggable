@@ -4,7 +4,7 @@ use SilverStripe\View\Requirements;
 use SilverStripe\Forms\TextField;
 
 class TagField extends TextField {
-
+	private static $table_name = 'TagField';
 	public function __construct($name, $title = null, $value = '', $maxLength = null, $form = null) {
 
 		parent::__construct($name, $title, $value, $maxLength, $form);

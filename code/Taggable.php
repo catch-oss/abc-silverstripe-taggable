@@ -15,7 +15,7 @@ use SilverStripe\ORM\DataList;
 
 
 class Taggable extends DataExtension {
-
+    private static $table_name = 'Taggable';
     // secret stuff
     // ------------
 

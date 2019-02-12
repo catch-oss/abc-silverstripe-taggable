@@ -3,7 +3,7 @@ namespace Azt3k\SS\Taggable;
 use SilverStripe\Admin\ModelAdmin;
 
 class TagAdmin extends ModelAdmin {
-
+    private static $table_name = 'TagAdmin';
     /**
      * [$managed_models description]
      * @var array
