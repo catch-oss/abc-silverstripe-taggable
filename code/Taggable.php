@@ -6,6 +6,13 @@ use Azt3k\SS\Classes\DataObjectHelper;
 use SilverStripe\Assets\Image;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataExtension;
+use \Exception;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\DataList;
+
 
 class Taggable extends DataExtension {
 
