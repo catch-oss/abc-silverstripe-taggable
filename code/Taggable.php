@@ -47,7 +47,7 @@ class Taggable extends DataExtension {
     private static $indexes = array(
         'Tags'  => array(
             'type' => 'fulltext',
-            'value' => '"Tags"'
+            'columns' => ['Tags']
         )
     );
 
