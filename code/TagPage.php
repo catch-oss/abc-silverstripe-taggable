@@ -1,10 +1,12 @@
 <?php
 namespace Azt3k\SS\Taggable;
+
 use Azt3k\SS\Classes\AbcPaginator;
 use SilverStripe\Control\Director;
 use Azt3k\SS\Taggable\Taggable;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
+
 class TagPage extends Sitetree {
 	private static $table_name = 'TagPage';
 	private static $allowed_children = 'none';
