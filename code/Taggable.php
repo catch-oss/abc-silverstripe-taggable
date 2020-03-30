@@ -12,6 +12,8 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataList;
+use Azt3k\SS\Taggable\Tag;
+
 
 
 class Taggable extends DataExtension {
@@ -229,7 +231,7 @@ class Taggable extends DataExtension {
      */
     protected static function all_tags() {
         $tKey = 'full-tag-list';
-        if (empty(static::$cache[$tKey])) static::$cache[$tKey] = new DataList('Tag');
+        if (empty(static::$cache[$tKey])) static::$cache[$tKey] = new DataList(Tag::class);
         return static::$cache[$tKey];
     }
 
