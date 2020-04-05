@@ -2,6 +2,11 @@
 namespace Azt3k\SS\Taggable;
 use Azt3k\SS\Classes\AbcDB;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\SelectionGroup;
+use SilverStripe\Forms\SelectionGroup_Item;
+use SilverStripe\Forms\TabSet;
+use SilverStripe\Forms\FieldSet;
+use SilverStripe\Forms\CheckboxField;
 use Azt3k\SS\Classes\DataObjectHelper;
 use SilverStripe\Assets\Image;
 use SilverStripe\ORM\DataObject;
@@ -61,20 +66,21 @@ class Taggable extends DataExtension {
 
         $fields->removeByName('BlockScrape');
 
-        if (get_class($fields->fieldByName('Root.Main')) == 'TabSet') {
+        if (get_class($fields->fieldByName('Root.Main')) == TabSet::class) {
 
-            $fields->addFieldsToTab('Root.Main.Metadata', $this->getTagFields());
+            $fields->addFieldsToTab('Root.Main.Meta', $this->getTagFields());
 
-        } else if (get_class($fields->fieldByName('Root')) == 'TabSet') {
+        } else if (get_class($fields->fieldByName('Root')) == TabSet::class) {
 
-            $fields->addFieldsToTab('Root.Metadata', $this->getTagFields());
+            $fields->addFieldsToTab('Root.Meta', $this->getTagFields());
 
-        } else if (get_class($fields) == 'FieldSet' || get_class($fields) == 'FieldList') {
+        } else if (get_class($fields) == FieldSet::class || get_class($fields) == FieldList::class) {
 
             foreach ($this->getTagFields() as $f) {
                 $fields->push($f);
             }
         }
+
     }
 
 
@@ -120,7 +126,6 @@ class Taggable extends DataExtension {
      * @return array
      */
     protected function getTagFields() {
-
         $fields = new FieldList(
             LiteralField::create('BlockScrapeTitle', '<p>Block tag and meta keywords generation</p>'),
             SelectionGroup::create('BlockScrape', [
