@@ -68,11 +68,11 @@ class Taggable extends DataExtension {
 
         if (get_class($fields->fieldByName('Root.Main')) == TabSet::class) {
 
-            $fields->addFieldsToTab('Root.Main.Metadata', $this->getTagFields());
+            $fields->addFieldsToTab('Root.Main.Meta', $this->getTagFields());
 
         } else if (get_class($fields->fieldByName('Root')) == TabSet::class) {
 
-            $fields->addFieldsToTab('Root.Metadata', $this->getTagFields());
+            $fields->addFieldsToTab('Root.Meta', $this->getTagFields());
 
         } else if (get_class($fields) == FieldSet::class || get_class($fields) == FieldList::class) {
 
