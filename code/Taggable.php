@@ -300,7 +300,7 @@ class Taggable extends DataExtension {
             // build tag filter
             foreach ($tags as $tag) {
                 $tWhere .= ($tWhere ? $lookupMode : '' ) .
-                          ' Tags REGEXP \'(^|,| )+' . Convert::raw2sql($tag) . '($|,| )+\'';
+                          ' Tags REGEXP \'(^|,| )+' . Convert::raw2sql($tag) . '($|,| )+\' ';
             }
 
             // allow for AND / OR to be supplied in the $where
