@@ -299,8 +299,9 @@ class Taggable extends DataExtension {
 
             // build tag filter
             foreach ($tags as $tag) {
+                $cleanTag = preg_replace("[\(\)\']+", '', Convert::raw2sql($tag));
                 $tWhere .= ($tWhere ? $lookupMode : '' ) .
-                          ' Tags REGEXP \'(^|,| )+' . Convert::raw2sql($tag) . '($|,| )+\' ';
+                          ' Tags REGEXP \'(^|,| )+' . $cleanTag . '($|,| )+\' ';
             }
 
             // allow for AND / OR to be supplied in the $where
@@ -377,7 +378,8 @@ class Taggable extends DataExtension {
                 // Should be REGEX so we don't get partial matches
                 if ($extTable) {
                     foreach ($tags as $tag) {
-                        $filter[$table][] = $extTable . ".Tags REGEXP '(^|,| )+" . Convert::raw2sql($tag) . "($|,| )+'";
+                        $cleanTag = preg_replace("[\(\)\']+", '', Convert::raw2sql($tag));
+                        $filter[$table][] = $extTable . ".Tags REGEXP '(^|,| )+" . $cleanTag . "($|,| )+'";
                     }
                 }
             }
