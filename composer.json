@@ -13,8 +13,8 @@
     "require": {
         "php"                       : ">=7.2",
         "composer/installers"       : ">=1.0",
-        "silverstripe/framework"    : "^4",
-        "silverstripe/cms"          : "^4",
+        "silverstripe/framework"    : "*",
+        "silverstripe/cms"          : "*",
         "silverstripe/crontask"     : "^2.1",
         "azt3k/abc-silverstripe"    : "*"
     },
