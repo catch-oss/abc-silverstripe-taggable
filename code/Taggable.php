@@ -558,7 +558,7 @@ class Taggable extends DataExtension {
                 else {
 
                     // generate words from content
-                    $titlePieces = explode(' ', strip_tags(string) $this->owner->Title));
+                    $titlePieces = explode(' ', strip_tags((string) $this->owner->Title));
 
                     // title weighting x3
                     if (!empty($this->owner->Title))
