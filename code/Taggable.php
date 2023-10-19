@@ -544,11 +544,11 @@ class Taggable extends DataExtension {
                     foreach ($tags as $tag) {
 
                         // title weighting x3
-                        if (stripos((string) strip_tags($this->owner->Title), (string) $tag) !== false)
+                        if (stripos((string) strip_tags((string) $this->owner->Title), (string) $tag) !== false)
                             $words = array_merge($words, array($tag, $tag, $tag));
 
                         // add the content
-                        if (stripos((string) strip_tags($this->owner->Content), (string) $tag) !== false)
+                        if (stripos((string) strip_tags((string) $this->owner->Content), (string) $tag) !== false)
                             $words[] = $tag;
 
                     }
@@ -558,7 +558,7 @@ class Taggable extends DataExtension {
                 else {
 
                     // generate words from content
-                    $titlePieces = explode(' ', strip_tags($this->owner->Title));
+                    $titlePieces = explode(' ', strip_tags(string) $this->owner->Title));
 
                     // title weighting x3
                     if (!empty($this->owner->Title))
