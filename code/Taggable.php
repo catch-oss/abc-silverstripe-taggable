@@ -189,7 +189,7 @@ class Taggable extends DataExtension {
      */
     public static function explode_tags($tags) {
         if (is_array($tags)) return $tags;
-        return array_map('trim', explode(',', $tags));
+        return array_map('trim', explode(',', $tags ?? ''));
     }
 
     /**
