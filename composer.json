@@ -1,26 +1,26 @@
 {
-    "name": "azt3k/abc-silverstripe-taggable",
-    "description": "Add tags to SilverStripe DataObjects",
-    "license": "BSD-3-Clause-Clear",
-    "type": "silverstripe-vendormodule",
-    "authors": [
-        {
-            "name": "Aaron Latham-Ilari",
-            "email": "az@dev-io.us"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php"                       : ">=7.2",
-        "composer/installers"       : ">=1.0",
-        "silverstripe/framework"    : "*",
-        "silverstripe/cms"          : "*",
-        "silverstripe/crontask"     : "^2.1",
-        "azt3k/abc-silverstripe"    : "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Azt3k\\SS\\Taggable\\": "code/"
-        }
+  "name": "azt3k/abc-silverstripe-taggable",
+  "description": "Add tags to SilverStripe DataObjects",
+  "license": "BSD-3-Clause-Clear",
+  "type": "silverstripe-vendormodule",
+  "authors": [
+    {
+      "name": "Aaron Latham-Ilari",
+      "email": "az@dev-io.us"
     }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.1",
+    "composer/installers": "^2.2",
+    "silverstripe/framework": "^5",
+    "silverstripe/cms": "^5",
+    "silverstripe/crontask": "^3.0",
+    "azt3k/abc-silverstripe": "dev-feature/ss5-update"
+  },
+  "autoload": {
+    "psr-4": {
+      "Azt3k\\SS\\Taggable\\": "code/"
+    }
+  }
 }
