@@ -7,7 +7,7 @@ use Azt3k\SS\Taggable\Taggable;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
 
-class TagPage extends Sitetree {
+class TagPage extends SiteTree{
 	private static $table_name = 'TagPage';
 	private static $allowed_children = 'none';
 
@@ -54,11 +54,11 @@ class TagPage_Controller extends Controller {
 	 */
 	public function tag(){
 
-		$this->TagStr = $tag = Director::urlParam('ID');
+		$this->TagStr = $this->request->param('ID');
 
 		// page limits
 		$paginator = new AbcPaginator(Taggable::$default_num_page_items);
-		$dataSet = Taggable::getTaggedWith($tag, null, $paginator->start, $paginator->limit);
+		$dataSet = Taggable::getTaggedWith($this->TagStr, null, $paginator->start, $paginator->limit);
 
 		$this->TagSet = $dataSet;
 

@@ -6,7 +6,7 @@ Setup
 
 ````json
 "require": {
-    "azt3k/abc-silverstripe-taggable" : "dev-master"
+    "azt3k/abc-silverstripe-taggable" : "dev-feature/ss"
 }
 ````
 
@@ -22,6 +22,11 @@ Page::add_extension('Taggable')
 
 5. Start Tagging!
 
+
+SS 5 upgrade notes
+
+Don't believe the TagPage.ss will work, as the includes do not exist, may need to find the correct namespaces.
+Tag page controller ->  Tag function needs testing
 
 License
 -------

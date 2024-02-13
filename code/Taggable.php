@@ -8,7 +8,6 @@ use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\FieldSet;
 use SilverStripe\Forms\CheckboxField;
 use Azt3k\SS\Classes\DataObjectHelper;
-use SilverStripe\Assets\Image;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataExtension;
 use \Exception;
@@ -74,7 +73,7 @@ class Taggable extends DataExtension {
 
             $fields->addFieldsToTab('Root.Meta', $this->getTagFields());
 
-        } else if (get_class($fields) == FieldSet::class || get_class($fields) == FieldList::class) {
+        } else if (get_class($fields) == FieldList::class) {
 
             foreach ($this->getTagFields() as $f) {
                 $fields->push($f);
@@ -441,7 +440,7 @@ class Taggable extends DataExtension {
 
                 $set->push($dO);
             }
-            $set->unlimitedRowCount = $db->query('SELECT FOUND_ROWS() AS total')->fetch(PDO::FETCH_OBJ)->total;
+            $set->unlimitedRowCount = $db->query('SELECT FOUND_ROWS() AS total')->fetch(\PDO::FETCH_OBJ)->total;
 
             static::$cache[$key] = $set;
 

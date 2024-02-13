@@ -12,12 +12,12 @@
 		<div class="main-content-wrap">
 			<div class="main-content-left">
 				
-				<% control TagSet %>
+				<% loop $TagSet %>
 				
 					<div class="list-item">
 						<h3 class="item-title"><a href="$Link">$Title</a></h3>
 						<div class="item-body">
-							<% if AssociatedImage %>
+							<% if $AssociatedImage %>
 								<div class="item-image"><img src="$AssociatedImage.resizedCroppedAbsoluteURL(140,105)" /></div>
 							<% end_if %>
 							<div class="item-content">
@@ -30,7 +30,7 @@
 						</div>
 					</div>
 				
-				<% end_control %>
+				<% end_loop %>
 				
 				<% include Pagination %>
 				
