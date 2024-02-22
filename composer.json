@@ -16,7 +16,7 @@
     "silverstripe/framework": "^5",
     "silverstripe/cms": "^5",
     "silverstripe/crontask": "^3.0",
-    "catch-oss/abc-silverstripe": "dev-feature/ss5-update"
+    "azt3k/abc-silverstripe": "dev-feature/ss5-update"
   },
   "autoload": {
     "psr-4": {
