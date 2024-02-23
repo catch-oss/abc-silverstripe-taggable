@@ -1,5 +1,7 @@
 <?php
+
 namespace Azt3k\SS\Taggable;
+
 use Azt3k\SS\Classes\AbcDB;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\SelectionGroup;
@@ -17,10 +19,10 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataList;
 use Azt3k\SS\Taggable\Tag;
+use PDO;
 
-
-
-class Taggable extends DataExtension {
+class Taggable extends DataExtension
+{
     private static $table_name = 'Taggable';
     // secret stuff
     // ------------
@@ -61,45 +63,45 @@ class Taggable extends DataExtension {
     These fields do not display in model admin
     also where is updateCMSFields_forPopup
     */
-    public function updateCMSFields(FieldList $fields) {
+    public function updateCMSFields(FieldList $fields)
+    {
 
         $fields->removeByName('BlockScrape');
 
         if (get_class($fields->fieldByName('Root.Main')) == TabSet::class) {
 
             $fields->addFieldsToTab('Root.Main.Meta', $this->getTagFields());
-
         } else if (get_class($fields->fieldByName('Root')) == TabSet::class) {
 
             $fields->addFieldsToTab('Root.Meta', $this->getTagFields());
-
         } else if (get_class($fields) == FieldList::class) {
 
             foreach ($this->getTagFields() as $f) {
                 $fields->push($f);
             }
         }
-
     }
 
 
     // static Methods
     // ---------------
 
-    protected static function get_blacklisted_words() {
+    protected static function get_blacklisted_words()
+    {
         return array(
-            'of','a','the','and','an','or','nor',
-            'but','is','if','then','else','when',
-            'at','from','by','on','off','for',
-            'in','out','over','to','into','with',
-            'also','back','well','big','when','where',
-            'why','who','which', 'it', 'be', 'so', 'far',
-            'one', 'our', 'we','only','they','this', 'i',
+            'of', 'a', 'the', 'and', 'an', 'or', 'nor',
+            'but', 'is', 'if', 'then', 'else', 'when',
+            'at', 'from', 'by', 'on', 'off', 'for',
+            'in', 'out', 'over', 'to', 'into', 'with',
+            'also', 'back', 'well', 'big', 'when', 'where',
+            'why', 'who', 'which', 'it', 'be', 'so', 'far',
+            'one', 'our', 'we', 'only', 'they', 'this', 'i',
             'do', 'there', 'just', 'that'
         );
     }
 
-    public static function str_to_tags($str) {
+    public static function str_to_tags($str)
+    {
         $tags = array_map('trim', explode(',', $str));
         $out = array();
         foreach ($tags as $tag) {
@@ -113,9 +115,10 @@ class Taggable extends DataExtension {
     // Actual Methods
     // --------------
 
-    public function getIncludeInDump(){
+    public function getIncludeInDump()
+    {
         $includeInDump = method_exists($this->owner, 'getIncludeInDump') ? $this->owner->getIncludeInDump() : array();
-        $includeInDump = (  !empty($includeInDump) && is_array($includeInDump) ) ? $includeInDump : array() ;
+        $includeInDump = (!empty($includeInDump) && is_array($includeInDump)) ? $includeInDump : array();
         $includeInDump[] = 'TagURLStr';
         $includeInDump = array_unique($includeInDump);
         return $includeInDump;
@@ -124,7 +127,8 @@ class Taggable extends DataExtension {
     /**
      * @return array
      */
-    protected function getTagFields() {
+    protected function getTagFields()
+    {
         $fields = new FieldList(
             LiteralField::create('BlockScrapeTitle', '<p>Block tag and meta keywords generation</p>'),
             SelectionGroup::create('BlockScrape', [
@@ -152,18 +156,21 @@ class Taggable extends DataExtension {
     }
 
     // need to get these to work properly
-    public function getExplodedTags(){
+    public function getExplodedTags()
+    {
         return static::explode_tags($this->owner->Tags);
     }
 
-    public function setExplodedTags($tags){
-        $this->owner->Tags = is_array($tags) ? implode(',', array_map('trim', $tags)) : $tags ;
+    public function setExplodedTags($tags)
+    {
+        $this->owner->Tags = is_array($tags) ? implode(',', array_map('trim', $tags)) : $tags;
     }
 
-    public function getTagURLStr(){
+    public function getTagURLStr()
+    {
         return $this->owner->Tags
             ? self::tags2Links($this->owner->Tags)
-            : null ;
+            : null;
     }
 
     /**
@@ -171,7 +178,8 @@ class Taggable extends DataExtension {
      * @param  string $str [description]
      * @return array        [description]
      */
-    public static function extract_hash_tags($str) {
+    public static function extract_hash_tags($str)
+    {
         $hashtags = [];
         preg_match_all('/(#\w+)/u', $str, $matches);
         if ($matches) {
@@ -186,7 +194,8 @@ class Taggable extends DataExtension {
      * @param  string $tags [description]
      * @return array        [description]
      */
-    public static function explode_tags($tags) {
+    public static function explode_tags($tags)
+    {
         if (is_array($tags)) return $tags;
         return array_map('trim', explode(',', $tags ?? ''));
     }
@@ -195,7 +204,8 @@ class Taggable extends DataExtension {
      * cache proxy method for DataObjectHelper
      * @return [type] [description]
      */
-    protected static function extended_classes() {
+    protected static function extended_classes()
+    {
         $key = 'extended_classes';
         if (empty(static::$cache[$key])) {
             static::$cache[$key] = DataObjectHelper::getExtendedClasses('Taggable');
@@ -208,7 +218,8 @@ class Taggable extends DataExtension {
      * @param  [type] $className [description]
      * @return [type]            [description]
      */
-    protected static function table_for_class($className) {
+    protected static function table_for_class($className)
+    {
         $key = 'table_for_class' . $className;
         if (empty(static::$cache[$key])) {
             static::$cache[$key] = DataObjectHelper::getTableForClass($className);
@@ -222,7 +233,8 @@ class Taggable extends DataExtension {
      * @param  [type] $prop      [description]
      * @return [type]            [description]
      */
-    protected static function extension_table_for_class_with_property($className, $prop) {
+    protected static function extension_table_for_class_with_property($className, $prop)
+    {
         $key = 'extension_table_for_class_with_property' . $className . $prop;
         if (empty(static::$cache[$key])) {
             static::$cache[$key] =  DataObjectHelper::getExtensionTableForClassWithProperty($className, $prop);
@@ -233,7 +245,8 @@ class Taggable extends DataExtension {
     /**
      * cache proxy method for DataList
      */
-    protected static function all_tags() {
+    protected static function all_tags()
+    {
         $tKey = 'full-tag-list';
         if (empty(static::$cache[$tKey])) static::$cache[$tKey] = new DataList(Tag::class);
         return static::$cache[$tKey];
@@ -242,7 +255,8 @@ class Taggable extends DataExtension {
     /**
      * cache proxy method for all_tags()->map
      */
-    protected static function all_tag_arr() {
+    protected static function all_tag_arr()
+    {
         $tKey = 'full-tag-list-arr';
         if (empty(static::$cache[$tKey])) {
             $r = array();
@@ -259,7 +273,8 @@ class Taggable extends DataExtension {
      * @param  polymorphic $arg [description]
      * @return string           [description]
      */
-    protected static function safe_args($arg) {
+    protected static function safe_args($arg)
+    {
         if (is_array($arg)) $arg = implode('_', $arg);
         return preg_replace('/[^A-Za-z0-9]/', '_', $arg);
     }
@@ -271,7 +286,8 @@ class Taggable extends DataExtension {
      * @param  string $tags $where      an additional SQL fragment to append to the where clause
      * @return DataList                 the data list containing the tagged content
      */
-    public static function tagged_with($className, $tags, $where = '', $lookupMode = 'OR') {
+    public static function tagged_with($className, $tags, $where = '', $lookupMode = 'OR')
+    {
 
         // validate args
         if ($lookupMode != 'AND' && $lookupMode != 'OR')
@@ -279,13 +295,13 @@ class Taggable extends DataExtension {
 
         // generate a cache key
         $key = preg_replace('/[^A-Za-z0-9]/', '_', __FUNCTION__) .
-               implode(
-                    '_',
-                    array_map(
-                        array(get_called_class(), 'safe_args'),
-                        func_get_args()
-                    )
-                );
+            implode(
+                '_',
+                array_map(
+                    array(get_called_class(), 'safe_args'),
+                    func_get_args()
+                )
+            );
 
         // chache hit?
         if (empty(static::$cache[$key])) {
@@ -299,8 +315,8 @@ class Taggable extends DataExtension {
             // build tag filter
             foreach ($tags as $tag) {
                 $cleanTag = preg_replace("/[\(\)\']+/", '', Convert::raw2sql($tag));
-                $tWhere .= ($tWhere ? $lookupMode : '' ) .
-                          ' Tags REGEXP \'(^|,| )+' . $cleanTag . '($|,| )+\' ';
+                $tWhere .= ($tWhere ? $lookupMode : '') .
+                    ' Tags REGEXP \'(^|,| )+' . $cleanTag . '($|,| )+\' ';
             }
 
             // allow for AND / OR to be supplied in the $where
@@ -327,17 +343,18 @@ class Taggable extends DataExtension {
      * @param string  $lookupMode if AND then you get content tagged with all ptovided tags
      *                            if OR then you get content tagged with at least one of the provided tags
      */
-    public static function getTaggedWith($tags, $filterSql = null, $start = 0, $limit = 40, $lookupMode = 'OR') {
+    public static function getTaggedWith($tags, $filterSql = null, $start = 0, $limit = 40, $lookupMode = 'OR')
+    {
 
         // generate a cache key
         $key = preg_replace('/[^A-Za-z0-9]/', '_', __FUNCTION__) .
-               implode(
-                    '_',
-                    array_map(
-                        array(get_called_class(), 'safe_args'),
-                        func_get_args()
-                    )
-                );
+            implode(
+                '_',
+                array_map(
+                    array(get_called_class(), 'safe_args'),
+                    func_get_args()
+                )
+            );
 
         // chache hit?
         if (empty(static::$cache[$key])) {
@@ -354,7 +371,7 @@ class Taggable extends DataExtension {
             $tables = $joins = $filter = array();
 
             // Build Query Data
-            foreach($classes as $className){
+            foreach ($classes as $className) {
 
                 // Fetch Class Data
                 $table      = static::table_for_class($className);
@@ -364,14 +381,14 @@ class Taggable extends DataExtension {
                 if ($table) $tables[$table] = $table;
 
                 // join
-                if ($table && $extTable && $table!=$extTable) {
+                if ($table && $extTable && $table != $extTable) {
                     $joins[$table][] = $extTable;
-                } elseif($extTable) {
+                } elseif ($extTable) {
                     $tables[$extTable] = $extTable;
                 }
 
                 // Where
-                if ($table) $where[$table][] = "LOWER(" .$table . ".ClassName) = '" . strtolower($className) . "'";
+                if ($table) $where[$table][] = "LOWER(" . $table . ".ClassName) = '" . strtolower($className) . "'";
 
                 // Tag filter
                 // Should be REGEX so we don't get partial matches
@@ -384,26 +401,26 @@ class Taggable extends DataExtension {
             }
 
             // Build Query
-            foreach($tables as $table){
+            foreach ($tables as $table) {
 
-                if (array_key_exists($table, $joins)){
+                if (array_key_exists($table, $joins)) {
 
                     // Prepare Where Statement
                     $uWhere     = array_unique($where[$table]);
                     $uFilter    = array_unique($filter[$table]);
 
                     // this lookupMode injection will prob break something in AND mode
-                    $wSql         = "(".implode(' OR ',$uWhere).") AND (".implode(' ' . $lookupMode . ' ',$uFilter).")";
+                    $wSql         = "(" . implode(' OR ', $uWhere) . ") AND (" . implode(' ' . $lookupMode . ' ', $uFilter) . ")";
 
                     // Make the rest of the SQL
-                    if ($sql) $sql.= "UNION ALL"."\n\n";
-                    $rowCountSQL = !$sql ? "SQL_CALC_FOUND_ROWS " : "" ;
-                    $sql.= "SELECT " . $rowCountSQL . $table . ".ClassName, " . $table . ".ID" . "\n";
-                    $sql.= "FROM " . $table . "\n";
+                    if ($sql) $sql .= "UNION ALL" . "\n\n";
+                    $rowCountSQL = !$sql ? "SQL_CALC_FOUND_ROWS " : "";
+                    $sql .= "SELECT " . $rowCountSQL . $table . ".ClassName, " . $table . ".ID" . "\n";
+                    $sql .= "FROM " . $table . "\n";
 
                     // join
                     $join = array_unique($joins[$table]);
-                    foreach($join as $j){
+                    foreach ($join as $j) {
                         $sql .= " LEFT JOIN " . $j . " ON " . $table . ".ID = " . $j . ".ID" . "\n";
                     }
 
@@ -422,10 +439,10 @@ class Taggable extends DataExtension {
 
             // Get Data
             $result = $db->query($sql);
-            $result = $result ? $result->fetchAll(PDO::FETCH_OBJ) : array() ;
+            $result = $result ? $result->fetchAll(PDO::FETCH_OBJ) : array();
 
             // Convert to DOs
-            foreach( $result as $entry ){
+            foreach ($result as $entry) {
 
                 // Make the data easier to work with
                 $entry         = (object) $entry;
@@ -443,44 +460,46 @@ class Taggable extends DataExtension {
             $set->unlimitedRowCount = $db->query('SELECT FOUND_ROWS() AS total')->fetch(\PDO::FETCH_OBJ)->total;
 
             static::$cache[$key] = $set;
-
         }
 
         return static::$cache[$key];
-
     }
 
     // attach specific urls to tags for rendering
 
-    public static function tags2Links($strTags){
+    public static function tags2Links($strTags)
+    {
 
         // find the url of the tags page
         if (!$tagsPageURL = self::getTagPageLink()) throw new Exception('There is no page of type TagsPage in the site tree');
 
-        $outputTags = explode(',',$strTags);
+        $outputTags = explode(',', $strTags);
         $tempTags = array();
 
-        foreach($outputTags as $oTags){
-            array_push($tempTags, "<a href='".$tagsPageURL."tag/".trim($oTags)."'>".trim($oTags)."</a>");
+        foreach ($outputTags as $oTags) {
+            array_push($tempTags, "<a href='" . $tagsPageURL . "tag/" . trim($oTags) . "'>" . trim($oTags) . "</a>");
         }
 
         return implode(', ', $tempTags);
     }
 
-    public static function getTagPageLink(){
-        if (!self::$tags_page_link){
-            if (!$tagsPage = DataObject::get_one('TagPage')) return false ;
+    public static function getTagPageLink()
+    {
+        if (!self::$tags_page_link) {
+            if (!$tagsPage = DataObject::get_one('TagPage')) return false;
             self::$tags_page_link = $tagsPage->Link();
         }
         return self::$tags_page_link;
     }
 
-    public function getAssociatedLink(){
+    public function getAssociatedLink()
+    {
         if (method_exists($this->owner, 'Link')) return $this->owner->Link();
         return false;
     }
 
-    public function getAssociatedImage(){
+    public function getAssociatedImage()
+    {
         if (method_exists($this->owner, 'getAssociatedImage')) return $this->owner->getAssociatedImage();
         if (method_exists($this->owner, 'getAddImage')) return $this->owner->getAddImage();
         if (method_exists($this->owner, 'Image')) return $this->owner->Image();
@@ -498,7 +517,8 @@ class Taggable extends DataExtension {
      * appending tags to the Tag table on save?
      * @return void
      */
-    public function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
 
         // call the parent onBeforeWrite
         parent::onBeforeWrite();
@@ -549,7 +569,6 @@ class Taggable extends DataExtension {
                         // add the content
                         if (stripos((string) strip_tags((string) $this->owner->Content), (string) $tag) !== false)
                             $words[] = $tag;
-
                     }
                 }
 
@@ -566,15 +585,14 @@ class Taggable extends DataExtension {
                     // add the content
                     if (!empty($this->owner->Content))
                         $words = array_merge($words, explode(' ', strip_tags($this->owner->Content)));
-
                 }
 
                 // generate weightings
-                foreach($words as $word){
+                foreach ($words as $word) {
                     $word = strtolower(trim(html_entity_decode(strval($word))));
                     $word = trim($word, ',.!');
-                    if ($word && !in_array(strtolower($word),$exclude) && substr($word,0,1) != '&' && strlen($word) > 3)
-                        $parsed[$word] = !empty($parsed[$word]) ? ($parsed[$word] + 1) : 1 ;
+                    if ($word && !in_array(strtolower($word), $exclude) && substr($word, 0, 1) != '&' && strlen($word) > 3)
+                        $parsed[$word] = !empty($parsed[$word]) ? ($parsed[$word] + 1) : 1;
                 }
 
                 // sort by weight and extract the top 15
@@ -585,7 +603,7 @@ class Taggable extends DataExtension {
                 $dChecked = array();
                 foreach ($sample as $value) {
                     $value = strval($value);
-                    if (!empty($value) && strlen($value) > 3 ) $dChecked[] = $value;
+                    if (!empty($value) && strlen($value) > 3) $dChecked[] = $value;
                 }
 
                 // append any hashtags
@@ -622,6 +640,5 @@ class Taggable extends DataExtension {
         // lowercase
         $this->owner->Tags = strtolower($this->owner->Tags);
         $this->owner->MetaKeywords = strtolower($this->owner->MetaKeywords);
-
     }
 }
