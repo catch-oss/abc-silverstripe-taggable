@@ -827,4 +827,275 @@ class TaggableTest extends SapphireTest
         // THEN it should return an ArrayList respecting the limit
         $this->assertInstanceOf(ArrayList::class, $result);
     }
+
+    // ---------------------------------------------------------------
+    // Regex sanitization and REGEXP matching tests
+    // ---------------------------------------------------------------
+
+    public function testTaggedWithStripsRegexpMetacharacters(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search for a tag containing REGEXP metacharacters (.+*[]^${}|)
+        // THEN it should NOT throw a SQL error — the metacharacters are stripped
+        $result = Taggable::tagged_with(Page::class, 'silver.*stripe');
+        $this->assertInstanceOf(DataList::class, $result);
+    }
+
+    public function testTaggedWithHandlesBracketsInTag(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search for a tag containing square brackets (REGEXP character class syntax)
+        // THEN it should NOT cause a SQL REGEXP parse error
+        $result = Taggable::tagged_with(Page::class, '[test]');
+        $this->assertInstanceOf(DataList::class, $result);
+    }
+
+    public function testTaggedWithHandlesParenthesesInTag(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search for a tag containing parentheses (REGEXP grouping syntax)
+        // THEN it should NOT cause a SQL error
+        $result = Taggable::tagged_with(Page::class, '(test)');
+        $this->assertInstanceOf(DataList::class, $result);
+    }
+
+    public function testTaggedWithHandlesSqlInjectionAttempt(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search with a string that attempts SQL injection via quotes
+        // THEN it should NOT cause a SQL error — special chars are stripped
+        $result = Taggable::tagged_with(Page::class, "'; DROP TABLE Page; --");
+        $this->assertInstanceOf(DataList::class, $result);
+    }
+
+    public function testTaggedWithPreservesWordCharsAndHyphens(): void
+    {
+        // GIVEN a page with a hyphenated tag 'web-dev' exists (from fixtures)
+        $this->objFromFixture(Page::class, 'page_regex1');
+
+        // WHEN we search for the hyphenated tag
+        $result = Taggable::tagged_with(Page::class, 'web-dev');
+
+        // THEN it should return results (hyphens are preserved by the sanitizer)
+        $this->assertInstanceOf(DataList::class, $result);
+        $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testTaggedWithMatchesTagAtStartOfField(): void
+    {
+        // GIVEN a page with Tags = 'web-dev, css3, node'
+        $this->objFromFixture(Page::class, 'page_regex1');
+
+        // WHEN we search for 'web-dev' (the first tag in the comma-separated list)
+        $result = Taggable::tagged_with(Page::class, 'web-dev');
+
+        // THEN it should match
+        $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testTaggedWithMatchesTagInMiddleOfField(): void
+    {
+        // GIVEN a page with Tags = 'web-dev, css3, node'
+        $this->objFromFixture(Page::class, 'page_regex1');
+
+        // WHEN we search for 'css3' (a middle tag in the comma-separated list)
+        $result = Taggable::tagged_with(Page::class, 'css3');
+
+        // THEN it should match
+        $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testTaggedWithMatchesTagAtEndOfField(): void
+    {
+        // GIVEN a page with Tags = 'web-dev, css3, node'
+        $this->objFromFixture(Page::class, 'page_regex1');
+
+        // WHEN we search for 'node' (the last tag in the comma-separated list)
+        $result = Taggable::tagged_with(Page::class, 'node');
+
+        // THEN it should match
+        $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testTaggedWithMatchesSingleTagField(): void
+    {
+        // GIVEN a page with Tags = 'solotag' (only one tag, no commas)
+        $this->objFromFixture(Page::class, 'page_regex2');
+
+        // WHEN we search for 'solotag'
+        $result = Taggable::tagged_with(Page::class, 'solotag');
+
+        // THEN it should match
+        $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testTaggedWithDoesNotMatchPartialTag(): void
+    {
+        // GIVEN a page with tag 'silverstripe' (from fixtures)
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search for 'silver' (a partial match)
+        $result = Taggable::tagged_with(Page::class, 'silver');
+
+        // THEN it should NOT match — the REGEXP requires word boundary (^|,| )
+        $found = false;
+        foreach ($result as $item) {
+            if ($item->Title === 'Test Page One') {
+                $found = true;
+                break;
+            }
+        }
+        $this->assertFalse($found, 'Partial tag "silver" should not match "silverstripe"');
+    }
+
+    public function testGetTaggedWithStripsRegexpMetacharacters(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search getTaggedWith with REGEXP metacharacters
+        // THEN it should NOT throw a SQL error
+        $result = Taggable::getTaggedWith('test.*injection');
+        $this->assertInstanceOf(ArrayList::class, $result);
+    }
+
+    public function testGetTaggedWithHandlesBracketsInTag(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search with square brackets
+        // THEN it should NOT cause a SQL REGEXP parse error
+        $result = Taggable::getTaggedWith('[exploit]');
+        $this->assertInstanceOf(ArrayList::class, $result);
+    }
+
+    public function testGetTaggedWithHandlesSqlInjectionAttempt(): void
+    {
+        // GIVEN pages with tags exist in the database
+        $this->objFromFixture(Page::class, 'page1');
+
+        // WHEN we search with a SQL injection attempt
+        // THEN it should NOT cause a SQL error
+        $result = Taggable::getTaggedWith("'; DROP TABLE Page; --");
+        $this->assertInstanceOf(ArrayList::class, $result);
+    }
+
+    // ---------------------------------------------------------------
+    // extract_hash_tags regex edge cases
+    // ---------------------------------------------------------------
+
+    public function testExtractHashTagsWithUnderscores(): void
+    {
+        // GIVEN a string with underscore-containing hashtags
+        $input = 'Check out #web_dev and #php_unit for testing';
+
+        // WHEN we extract hash tags
+        $result = Taggable::extract_hash_tags($input);
+
+        // THEN underscores should be included (\w includes underscores)
+        $this->assertContains('#web_dev', $result);
+        $this->assertContains('#php_unit', $result);
+    }
+
+    public function testExtractHashTagsWithNumbers(): void
+    {
+        // GIVEN a string with number-containing hashtags
+        $input = 'Using #php8 and #css3 for #html5 development';
+
+        // WHEN we extract hash tags
+        $result = Taggable::extract_hash_tags($input);
+
+        // THEN numbers should be included (\w includes digits)
+        $this->assertContains('#php8', $result);
+        $this->assertContains('#css3', $result);
+        $this->assertContains('#html5', $result);
+    }
+
+    public function testExtractHashTagsIgnoresHtmlEntities(): void
+    {
+        // GIVEN a string with # inside HTML entities (not hashtags)
+        $input = 'Color &#123; is not a hashtag but #realhashtag is';
+
+        // WHEN we extract hash tags
+        $result = Taggable::extract_hash_tags($input);
+
+        // THEN only the real hashtag should be found (&#123 would match #123 but that's a word char pattern)
+        $this->assertContains('#realhashtag', $result);
+    }
+
+    public function testExtractHashTagsStopsAtPunctuation(): void
+    {
+        // GIVEN a string where hashtags are followed by punctuation
+        $input = 'Check #silverstripe! And #php, also #webdev.';
+
+        // WHEN we extract hash tags
+        $result = Taggable::extract_hash_tags($input);
+
+        // THEN hashtags should stop at non-word characters (punctuation not included)
+        $this->assertContains('#silverstripe', $result);
+        $this->assertContains('#php', $result);
+        $this->assertContains('#webdev', $result);
+        $this->assertNotContains('#silverstripe!', $result);
+        $this->assertNotContains('#php,', $result);
+        $this->assertNotContains('#webdev.', $result);
+    }
+
+    public function testExtractHashTagsIgnoresStandaloneHash(): void
+    {
+        // GIVEN a string with a standalone # (no word characters after it)
+        $input = 'This # is not a hashtag but #this is';
+
+        // WHEN we extract hash tags
+        $result = Taggable::extract_hash_tags($input);
+
+        // THEN only the valid hashtag should be found
+        $this->assertCount(1, $result);
+        $this->assertContains('#this', $result);
+    }
+
+    // ---------------------------------------------------------------
+    // safe_args regex edge cases
+    // ---------------------------------------------------------------
+
+    public function testSafeArgsWithEmptyString(): void
+    {
+        // GIVEN an empty string
+        // WHEN we call safe_args
+        $method = new \ReflectionMethod(Taggable::class, 'safe_args');
+        $result = $method->invoke(null, '');
+
+        // THEN it should return an empty string
+        $this->assertEquals('', $result);
+    }
+
+    public function testSafeArgsWithOnlySpecialChars(): void
+    {
+        // GIVEN a string of only special characters
+        // WHEN we call safe_args
+        $method = new \ReflectionMethod(Taggable::class, 'safe_args');
+        $result = $method->invoke(null, '!@#$%^&*()');
+
+        // THEN all chars should be replaced with underscores
+        $this->assertEquals('__________', $result);
+    }
+
+    public function testSafeArgsPreservesAlphanumeric(): void
+    {
+        // GIVEN a purely alphanumeric string
+        // WHEN we call safe_args
+        $method = new \ReflectionMethod(Taggable::class, 'safe_args');
+        $result = $method->invoke(null, 'abc123XYZ');
+
+        // THEN it should remain unchanged
+        $this->assertEquals('abc123XYZ', $result);
+    }
 }

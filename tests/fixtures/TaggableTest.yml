@@ -44,3 +44,23 @@ Page:
     ReGenerateKeywords: true
     RestrictToKnownTags: false
     TreatHashTagsAsKnownTags: true
+  page_regex1:
+    Title: 'Regex Edge Case Page'
+    Content: '<p>Page for testing REGEXP matching</p>'
+    Tags: 'web-dev, css3, node'
+    MetaKeywords: ''
+    BlockScrape: false
+    ReGenerateTags: false
+    ReGenerateKeywords: false
+    RestrictToKnownTags: false
+    TreatHashTagsAsKnownTags: false
+  page_regex2:
+    Title: 'Single Tag Page'
+    Content: '<p>Page with only one tag</p>'
+    Tags: 'solotag'
+    MetaKeywords: ''
+    BlockScrape: false
+    ReGenerateTags: false
+    ReGenerateKeywords: false
+    RestrictToKnownTags: false
+    TreatHashTagsAsKnownTags: false
