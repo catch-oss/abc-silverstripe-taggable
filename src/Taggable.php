@@ -57,13 +57,25 @@ class Taggable extends Extension
 
     public function updateCMSFields(FieldList $fields): void
     {
-        $fields->removeByName('BlockScrape');
+        // Remove auto-scaffolded fields — we re-add them in a custom layout via getTagFields()
+        $fields->removeByName([
+            'BlockScrape',
+            'ReGenerateTags',
+            'ReGenerateKeywords',
+            'RestrictToKnownTags',
+            'TreatHashTagsAsKnownTags',
+            'Tags',
+            'MetaKeywords',
+        ]);
 
-        if (get_class($fields->fieldByName('Root.Main')) == TabSet::class) {
-            $fields->addFieldsToTab('Root.Main.Meta', $this->getTagFields());
-        } elseif (get_class($fields->fieldByName('Root')) == TabSet::class) {
-            $fields->addFieldsToTab('Root.Meta', $this->getTagFields());
-        } elseif (get_class($fields) == FieldList::class) {
+        $rootMain = $fields->fieldByName('Root.Main');
+        $root = $fields->fieldByName('Root');
+
+        if ($rootMain instanceof TabSet) {
+            $fields->addFieldsToTab('Root.Main.Meta', $this->getTagFields()->toArray());
+        } elseif ($root instanceof TabSet) {
+            $fields->addFieldsToTab('Root.Meta', $this->getTagFields()->toArray());
+        } else {
             foreach ($this->getTagFields() as $f) {
                 $fields->push($f);
             }
@@ -169,7 +181,8 @@ class Taggable extends Extension
     {
         $key = 'extended_classes';
         if (empty(static::$cache[$key])) {
-            static::$cache[$key] = DataObjectHelper::getExtendedClasses('Taggable');
+            $result = DataObjectHelper::getExtendedClasses(static::class);
+            static::$cache[$key] = is_array($result) ? $result : [];
         }
         return static::$cache[$key];
     }
@@ -215,7 +228,7 @@ class Taggable extends Extension
     protected static function safe_args(mixed $arg): string
     {
         if (is_array($arg)) $arg = implode('_', $arg);
-        return preg_replace('/[^A-Za-z0-9]/', '_', $arg);
+        return preg_replace('/[^A-Za-z0-9]/', '_', (string) $arg);
     }
 
     public static function tagged_with(string $className, array|string $tags, string $where = '', string $lookupMode = 'OR'): DataList
@@ -282,6 +295,15 @@ class Taggable extends Extension
         if ($lookupMode != 'AND' && $lookupMode != 'OR') throw new Exception('Invalid lookupMode supplied');
 
         $classes = static::extended_classes();
+
+        if (empty($classes)) {
+            $set = new ArrayList();
+            static::$lastQueryCount = 0;
+            static::$cache[$key . ':count'] = 0;
+            static::$cache[$key] = $set;
+            return $set;
+        }
+
         $set     = new ArrayList;
         $db      = AbcDB::getInstance();
         $sql     = '';
@@ -330,6 +352,14 @@ class Taggable extends Extension
 
                 $sql .= "WHERE " . $wSql . "\n\n";
             }
+        }
+
+        // If no SQL was generated (no joined tables found), return empty set
+        if (empty(trim($sql))) {
+            static::$lastQueryCount = 0;
+            static::$cache[$key . ':count'] = 0;
+            static::$cache[$key] = $set;
+            return $set;
         }
 
         if ($filterSql) {
@@ -405,7 +435,6 @@ class Taggable extends Extension
 
     public function onBeforeWrite(): void
     {
-        parent::onBeforeWrite();
 
         if ($this->owner->BlockScrape) return;
 

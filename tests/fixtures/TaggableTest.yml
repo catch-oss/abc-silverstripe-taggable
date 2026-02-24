@@ -1,0 +1,46 @@
+Azt3k\SS\Taggable\Tag:
+  tag1:
+    Title: 'silverstripe'
+  tag2:
+    Title: 'php'
+  tag3:
+    Title: 'testing'
+  tag4:
+    Title: 'framework'
+
+Azt3k\SS\Taggable\TagPage:
+  tagpage1:
+    Title: 'Tags'
+    URLSegment: 'tags'
+
+Page:
+  page1:
+    Title: 'Test Page One'
+    Content: '<p>This is a test page about silverstripe and php development</p>'
+    Tags: 'silverstripe, php, development'
+    MetaKeywords: 'silverstripe, php'
+    BlockScrape: false
+    ReGenerateTags: false
+    ReGenerateKeywords: false
+    RestrictToKnownTags: false
+    TreatHashTagsAsKnownTags: true
+  page2:
+    Title: 'Another Test Page'
+    Content: '<p>Testing the tagging system with different content</p>'
+    Tags: 'testing, tagging'
+    MetaKeywords: 'testing'
+    BlockScrape: false
+    ReGenerateTags: false
+    ReGenerateKeywords: false
+    RestrictToKnownTags: false
+    TreatHashTagsAsKnownTags: true
+  page3:
+    Title: 'Hashtag Test Page'
+    Content: '<p>Check out #silverstripe and #php for #webdev projects</p>'
+    Tags: ''
+    MetaKeywords: ''
+    BlockScrape: false
+    ReGenerateTags: true
+    ReGenerateKeywords: true
+    RestrictToKnownTags: false
+    TreatHashTagsAsKnownTags: true

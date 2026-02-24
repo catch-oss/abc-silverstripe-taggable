@@ -10,6 +10,12 @@
         }
     ],
     "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:catch-oss/abc-silverstripe.git"
+        }
+    ],
     "require": {
         "php": "^8.5",
         "composer/installers": "^2.2",
