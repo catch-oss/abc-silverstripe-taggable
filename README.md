@@ -15,46 +15,49 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=catch-design_catch-oss-abc-silverstripe-taggable&metric=sqale_rating)](https://sonarcloud.io/component_measures?id=catch-design_catch-oss-abc-silverstripe-taggable)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=catch-design_catch-oss-abc-silverstripe-taggable&metric=vulnerabilities)](https://sonarcloud.io/component_measures?id=catch-design_catch-oss-abc-silverstripe-taggable)
 
-Add tags to SilverStripe DataObjects.
+Add tags to SilverStripe DataObjects with automatic tag generation from content.
+
+## Compatibility
+
+| Version | Silverstripe | PHP |
+|---------|-------------|-----|
+| release/6 | ^6.0 | ^8.5 |
+| release/5 | ^5.1 | ~8.4 |
 
 ## Setup
 
-1. Add the following to your composer.json
+1. Add the following to your `composer.json`:
 
 ```json
 "require": {
-    "azt3k/abc-silverstripe-taggable" : "dev-feature/ss"
+    "azt3k/abc-silverstripe-taggable": "dev-release/6"
 }
 ```
 
 2. Run `composer install`
 
-3. Add the extension to the DataObjects you wish to tag
+3. Add the extension to the DataObjects you wish to tag via YAML config:
 
-```php
-Page::add_extension('Taggable')
+```yaml
+Page:
+  extensions:
+    taggable: Azt3k\SS\Taggable\Taggable
 ```
 
-4. Run dev/build
+4. Run `dev/build`
 
-5. Start Tagging!
+5. Start tagging!
 
-## SS 5 upgrade notes
+## Features
 
-Don't believe the TagPage.ss will work, as the includes do not exist, may need to find the correct namespaces.
-Tag page controller -> Tag function needs testing
+- Automatic tag generation from page title and content
+- Meta keywords generation
+- Hashtag extraction from content
+- Known tags restriction mode
+- Blacklisted common words filtering
+- Tag administration via ModelAdmin
+- TagPage for browsing tagged content
 
 ## License
 
-Copyright (c) 2015, azt3k
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+BSD-3-Clause-Clear. See LICENSE file for details.

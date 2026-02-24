@@ -1,8 +1,4 @@
 <?php
 
-// Define path constant
-$path = str_replace('\\', '/', __DIR__);
-$path_fragments = explode('/', $path);
-$dir_name = $path_fragments[count($path_fragments) - 1];
-define('TAGGABLE_DIR', $dir_name);
-define('TAGGABLE_PATH', __DIR__);
+// Module constants removed — SS6 uses vendor:path syntax for module resources
+// e.g. Requirements::javascript('azt3k/abc-silverstripe-taggable:assets/build/js/lib.js')
