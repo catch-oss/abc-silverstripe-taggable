@@ -1,18 +1,22 @@
 <?php
+
 namespace Azt3k\SS\Taggable;
+
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\TextField;
 
-class TagField extends TextField {
-	private static $table_name = 'TagField';
-	public function __construct($name, $title = null, $value = '', $maxLength = null, $form = null) {
+class TagField extends TextField
+{
+    private static string $table_name = 'TagField';
 
-		parent::__construct($name, $title, $value, $maxLength, $form);
+    public function __construct(string $name, ?string $title = null, string $value = '', ?int $maxLength = null, mixed $form = null)
+    {
+        parent::__construct($name, $title, $value, $maxLength, $form);
 
-		Requirements::javascript(TAGGABLE_DIR . '/assets/build/js/lib.js');
-		Requirements::javascript(TAGGABLE_DIR . '/assets/build/js/tagfield.js');
-		Requirements::css(TAGGABLE_DIR . '/assets/build/css/main.css');
+        Requirements::javascript('azt3k/abc-silverstripe-taggable:assets/build/js/lib.js');
+        Requirements::javascript('azt3k/abc-silverstripe-taggable:assets/build/js/tagfield.js');
+        Requirements::css('azt3k/abc-silverstripe-taggable:assets/build/css/main.css');
 
-		$this->addExtraClass('text');
-	}
+        $this->addExtraClass('text');
+    }
 }

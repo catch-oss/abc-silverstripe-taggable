@@ -1,72 +1,23 @@
 <?php
+
 namespace Azt3k\SS\Taggable;
 
-use Azt3k\SS\Classes\AbcPaginator;
-use SilverStripe\Control\Director;
-use Azt3k\SS\Taggable\Taggable;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\Control\Controller;
+use SilverStripe\Forms\FieldList;
 
-class TagPage extends SiteTree{
-	private static $table_name = 'TagPage';
-	private static $allowed_children = 'none';
+class TagPage extends SiteTree
+{
+    private static string $table_name = 'TagPage';
 
-	private static $icon = 'abc-silverstripe-taggable/assets/build/img/icons/tags-page';
+    private static string $allowed_children = 'none';
 
-	public function getCMSFields() {
+    private static string $icon = 'abc-silverstripe-taggable/assets/build/img/icons/tags-page';
 
-		$fields = parent::getCMSFields();
-		$fields->removeFieldFromTab( 'Root.Main', 'Content' );
+    public function getCMSFields(): FieldList
+    {
+        $fields = parent::getCMSFields();
+        $fields->removeFieldFromTab('Root.Main', 'Content');
 
-		return $fields;
-	}
-
-}
-
-class TagPage_Controller extends Controller {
-
-	/**
-	 * An array of actions that can be accessed via a request. Each array element should be an action name, and the
-	 * permissions or conditions required to allow the user to access it.
-	 *
-	 * <code>
-	 * array (
-	 *     'action', // anyone can access this action
-	 *     'action' => true, // same as above
-	 *     'action' => 'ADMIN', // you must have ADMIN permissions to access this action
-	 *     'action' => '->checkAction' // you can only access this action if $this->checkAction() returns true
-	 * );
-	 * </code>
-	 *
-	 * @var array
-	 */
-	private static $allowed_actions = array (
-		'tag'
-	);
-
-	// public function init() {
-	// 	parent::init();
-	// }
-
-
-	/*
-	 * tag Action
-	 */
-	public function tag(){
-
-		$this->TagStr = $this->request->param('ID');
-
-		// page limits
-		$paginator = new AbcPaginator(Taggable::$default_num_page_items);
-		$dataSet = Taggable::getTaggedWith($this->TagStr, null, $paginator->start, $paginator->limit);
-
-		$this->TagSet = $dataSet;
-
-		// Supply template with pagination data
-		$this->Paginator = $paginator->dataForTemplate($dataSet->unlimitedRowCount, 2);
-
-		return array();
-
-	}
-
+        return $fields;
+    }
 }

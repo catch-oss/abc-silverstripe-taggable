@@ -26,13 +26,15 @@ class Taggable extends Extension
     // secret stuff
     // ------------
 
-    protected static $cache = [];
+    protected static array $cache = [];
+
+    protected static int $lastQueryCount = 0;
 
     // Framework
     // ---------
 
-    public static $default_num_page_items = 10;
-    protected static $tags_page_link = null;
+    public static int $default_num_page_items = 10;
+    protected static ?string $tags_page_link = null;
 
     private static $db = array(
         'Tags' => 'Text',
@@ -355,113 +357,117 @@ class Taggable extends Extension
                 )
             );
 
-        // chache hit?
-        if (empty(static::$cache[$key])) {
-
-            // clean up input
-            if (!is_array($tags)) $tags = static::explode_tags($tags);
-            if ($lookupMode != 'AND' && $lookupMode != 'OR') throw new Exception('Invalid lookupMode supplied');
-
-            // Set some vars
-            $classes     = static::extended_classes();
-            $set         = new ArrayList;
-            $db          = AbcDB::getInstance();
-            $sql         = '';
-            $tables = $joins = $filter = array();
-
-            // Build Query Data
-            foreach ($classes as $className) {
-
-                // Fetch Class Data
-                $table      = static::table_for_class($className);
-                $extTable   = static::extension_table_for_class_with_property($className, 'Tags');
-
-                // $tables we are working with
-                if ($table) $tables[$table] = $table;
-
-                // join
-                if ($table && $extTable && $table != $extTable) {
-                    $joins[$table][] = $extTable;
-                } elseif ($extTable) {
-                    $tables[$extTable] = $extTable;
-                }
-
-                // Where
-                if ($table) $where[$table][] = "LOWER(" . $table . ".ClassName) = '" . strtolower($className) . "'";
-
-                // Tag filter
-                // Should be REGEX so we don't get partial matches
-                if ($extTable) {
-                    foreach ($tags as $tag) {
-                        $cleanTag = preg_replace("/[\(\)\']+/", '', Convert::raw2sql($tag));
-                        $filter[$table][] = $extTable . ".Tags REGEXP '(^|,| )+" . $cleanTag . "($|,| )+'";
-                    }
-                }
-            }
-
-            // Build Query
-            foreach ($tables as $table) {
-
-                if (array_key_exists($table, $joins)) {
-
-                    // Prepare Where Statement
-                    $uWhere     = array_unique($where[$table]);
-                    $uFilter    = array_unique($filter[$table]);
-
-                    // this lookupMode injection will prob break something in AND mode
-                    $wSql         = "(" . implode(' OR ', $uWhere) . ") AND (" . implode(' ' . $lookupMode . ' ', $uFilter) . ")";
-
-                    // Make the rest of the SQL
-                    if ($sql) $sql .= "UNION ALL" . "\n\n";
-                    $rowCountSQL = !$sql ? "SQL_CALC_FOUND_ROWS " : "";
-                    $sql .= "SELECT " . $rowCountSQL . $table . ".ClassName, " . $table . ".ID" . "\n";
-                    $sql .= "FROM " . $table . "\n";
-
-                    // join
-                    $join = array_unique($joins[$table]);
-                    foreach ($join as $j) {
-                        $sql .= " LEFT JOIN " . $j . " ON " . $table . ".ID = " . $j . ".ID" . "\n";
-                    }
-
-                    // Add the WHERE statement
-                    $sql .= "WHERE " . $wSql . "\n\n";
-                }
-            }
-
-            // Add Global Filter to Query
-            if ($filterSql) {
-                $sql .= (count($tables) == 1 ? "AND " : "WHERE ") . $filterSql;
-            }
-
-            // Add Limits to Query
-            $sql .= " LIMIT " . $start . "," . $limit;
-
-            // Get Data
-            $result = $db->query($sql);
-            $result = $result ? $result->fetchAll(PDO::FETCH_OBJ) : array();
-
-            // Convert to DOs
-            foreach ($result as $entry) {
-
-                // Make the data easier to work with
-                $entry         = (object) $entry;
-                $className     = $entry->ClassName;
-
-                // this is faster but might not pull in relations
-                //$dO = new $className;
-                //$dO = DataObjectHelper::populate($dO, $entry);
-
-                // this is slower, but will be more reliable
-                $dO = DataObject::get_by_id($className, $entry->ID);
-
-                $set->push($dO);
-            }
-            $set->unlimitedRowCount = $db->query('SELECT FOUND_ROWS() AS total')->fetch(\PDO::FETCH_OBJ)->total;
-
-            static::$cache[$key] = $set;
+        // cache hit?
+        if (!empty(static::$cache[$key])) {
+            static::$lastQueryCount = static::$cache[$key . ':count'] ?? 0;
+            return static::$cache[$key];
         }
 
-        return static::$cache[$key];
+        // clean up input
+        if (!is_array($tags)) $tags = static::explode_tags($tags);
+        if ($lookupMode != 'AND' && $lookupMode != 'OR') throw new Exception('Invalid lookupMode supplied');
+
+        // Set some vars
+        $classes = static::extended_classes();
+        $set     = new ArrayList;
+        $db      = AbcDB::getInstance();
+        $sql     = '';
+        $where   = [];
+        $tables  = $joins = $filter = [];
+
+        // Build Query Data
+        foreach ($classes as $className) {
+
+            // Fetch Class Data
+            $table    = static::table_for_class($className);
+            $extTable = static::extension_table_for_class_with_property($className, 'Tags');
+
+            // $tables we are working with
+            if ($table) $tables[$table] = $table;
+
+            // join
+            if ($table && $extTable && $table != $extTable) {
+                $joins[$table][] = $extTable;
+            } elseif ($extTable) {
+                $tables[$extTable] = $extTable;
+            }
+
+            // Where
+            if ($table) $where[$table][] = "LOWER(" . $table . ".ClassName) = '" . strtolower($className) . "'";
+
+            // Tag filter — REGEX so we don't get partial matches
+            if ($extTable) {
+                foreach ($tags as $tag) {
+                    $cleanTag = preg_replace("/[\(\)\']+/", '', Convert::raw2sql($tag));
+                    $filter[$table][] = $extTable . ".Tags REGEXP '(^|,| )+" . $cleanTag . "($|,| )+'";
+                }
+            }
+        }
+
+        // Build Query
+        foreach ($tables as $table) {
+
+            if (array_key_exists($table, $joins)) {
+
+                // Prepare Where Statement
+                $uWhere  = array_unique($where[$table]);
+                $uFilter = array_unique($filter[$table]);
+
+                $wSql = "(" . implode(' OR ', $uWhere) . ") AND (" . implode(' ' . $lookupMode . ' ', $uFilter) . ")";
+
+                // Make the rest of the SQL
+                if ($sql) $sql .= "UNION ALL" . "\n\n";
+                $sql .= "SELECT " . $table . ".ClassName, " . $table . ".ID" . "\n";
+                $sql .= "FROM " . $table . "\n";
+
+                // join
+                $join = array_unique($joins[$table]);
+                foreach ($join as $j) {
+                    $sql .= " LEFT JOIN " . $j . " ON " . $table . ".ID = " . $j . ".ID" . "\n";
+                }
+
+                // Add the WHERE statement
+                $sql .= "WHERE " . $wSql . "\n\n";
+            }
+        }
+
+        // Add Global Filter to Query
+        if ($filterSql) {
+            $sql .= (count($tables) == 1 ? "AND " : "WHERE ") . $filterSql;
+        }
+
+        // Count query (replaces deprecated SQL_CALC_FOUND_ROWS)
+        $countSql = "SELECT COUNT(*) AS total FROM (" . $sql . ") AS subquery";
+        $countResult = $db->query($countSql);
+        $unlimitedRowCount = $countResult ? (int) $countResult->fetch(PDO::FETCH_OBJ)->total : 0;
+
+        // Add Limits to Query
+        $sql .= " LIMIT " . $start . "," . $limit;
+
+        // Get Data
+        $result = $db->query($sql);
+        $result = $result ? $result->fetchAll(PDO::FETCH_OBJ) : [];
+
+        // Convert to DOs
+        foreach ($result as $entry) {
+            $entry = (object) $entry;
+            $dO = DataObject::get_by_id($entry->ClassName, $entry->ID);
+            $set->push($dO);
+        }
+
+        static::$lastQueryCount = $unlimitedRowCount;
+        static::$cache[$key . ':count'] = $unlimitedRowCount;
+        static::$cache[$key] = $set;
+
+        return $set;
+    }
+
+    /**
+     * Returns the unlimited row count from the last getTaggedWith() call
+     */
+    public static function getLastQueryCount(): int
+    {
+        return static::$lastQueryCount;
     }
 
     // attach specific urls to tags for rendering
@@ -485,7 +491,7 @@ class Taggable extends Extension
     public static function getTagPageLink()
     {
         if (!self::$tags_page_link) {
-            if (!$tagsPage = DataObject::get_one('TagPage')) return false;
+            if (!$tagsPage = DataObject::get_one(TagPage::class)) return false;
             self::$tags_page_link = $tagsPage->Link();
         }
         return self::$tags_page_link;
