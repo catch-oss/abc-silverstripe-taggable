@@ -1,27 +1,18 @@
 <?php
+
 namespace Azt3k\SS\Taggable;
+
 use SilverStripe\Admin\ModelAdmin;
-use Azt3k\SS\Taggable\Tag;
 
-class TagAdmin extends ModelAdmin {
-    private static $table_name = 'TagAdmin';
-    /**
-     * [$managed_models description]
-     * @var array
-     */
-    private static $managed_models = array(
-        Tag::class
-    );
+class TagAdmin extends ModelAdmin
+{
+    private static string $table_name = 'TagAdmin';
 
-    /**
-     * [$url_segment description]
-     * @var string
-     */
-    private static $url_segment = 'Tags';
+    private static array $managed_models = [
+        Tag::class,
+    ];
 
-    /**
-     * [$menu_title description]
-     * @var string
-     */
-    private static $menu_title = 'Tags';
+    private static string $url_segment = 'Tags';
+
+    private static string $menu_title = 'Tags';
 }
