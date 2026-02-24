@@ -254,7 +254,7 @@ class Taggable extends Extension
 
         $tWhere = '';
         foreach ($tags as $tag) {
-            $cleanTag = preg_replace("/[\(\)\']+/", '', Convert::raw2sql($tag));
+            $cleanTag = preg_replace('/[^\w\s-]/u', '', Convert::raw2sql($tag));
             $tWhere .= ($tWhere ? $lookupMode : '') .
                 ' Tags REGEXP \'(^|,| )+' . $cleanTag . '($|,| )+\' ';
         }
@@ -327,7 +327,7 @@ class Taggable extends Extension
 
             if ($extTable) {
                 foreach ($tags as $tag) {
-                    $cleanTag = preg_replace("/[\(\)\']+/", '', Convert::raw2sql($tag));
+                    $cleanTag = preg_replace('/[^\w\s-]/u', '', Convert::raw2sql($tag));
                     $filter[$table][] = $extTable . ".Tags REGEXP '(^|,| )+" . $cleanTag . "($|,| )+'";
                 }
             }
@@ -469,7 +469,7 @@ class Taggable extends Extension
                         $words = array_merge($words, $titlePieces, $titlePieces, $titlePieces);
                     }
                     if (!empty($this->owner->Content)) {
-                        $words = array_merge($words, explode(' ', strip_tags($this->owner->Content)));
+                        $words = array_merge($words, explode(' ', strip_tags((string) $this->owner->Content)));
                     }
                 }
 

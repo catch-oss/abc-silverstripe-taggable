@@ -4,6 +4,7 @@ namespace Azt3k\SS\Taggable;
 
 use Azt3k\SS\Classes\AbcPaginator;
 use SilverStripe\Model\List\ArrayList;
+use SilverStripe\ORM\DataObject;
 use PageController;
 
 class TagPageController extends PageController
@@ -16,7 +17,7 @@ class TagPageController extends PageController
 
     protected ?ArrayList $TagSet = null;
 
-    protected mixed $Paginator = null;
+    protected ?DataObject $Paginator = null;
 
     public function tag(): array
     {
@@ -48,7 +49,7 @@ class TagPageController extends PageController
         return $this->TagSet;
     }
 
-    public function getPaginator(): mixed
+    public function getPaginator(): ?DataObject
     {
         return $this->Paginator;
     }
