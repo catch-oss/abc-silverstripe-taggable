@@ -2,14 +2,15 @@
 
 namespace Azt3k\SS\Taggable;
 
-use SilverStripe\View\Requirements;
+use SilverStripe\Forms\Form;
 use SilverStripe\Forms\TextField;
+use SilverStripe\View\Requirements;
 
 class TagField extends TextField
 {
     private static string $table_name = 'TagField';
 
-    public function __construct(string $name, ?string $title = null, string $value = '', ?int $maxLength = null, mixed $form = null)
+    public function __construct(string $name, ?string $title = null, string $value = '', ?int $maxLength = null, ?Form $form = null)
     {
         parent::__construct($name, $title, $value, $maxLength, $form);
 
