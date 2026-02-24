@@ -7,13 +7,12 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\SelectionGroup;
 use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TabSet;
-use SilverStripe\Forms\FieldSet;
 use SilverStripe\Forms\CheckboxField;
 use Azt3k\SS\Classes\DataObjectHelper;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use \Exception;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\LiteralField;
@@ -21,7 +20,7 @@ use SilverStripe\ORM\DataList;
 use Azt3k\SS\Taggable\Tag;
 use PDO;
 
-class Taggable extends DataExtension
+class Taggable extends Extension
 {
     private static $table_name = 'Taggable';
     // secret stuff
