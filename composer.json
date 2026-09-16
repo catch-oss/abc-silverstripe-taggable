@@ -19,14 +19,14 @@
     "require": {
         "php": "^8.5",
         "composer/installers": "^2.2",
-        "silverstripe/framework": "^6.0",
-        "silverstripe/cms": "^6.0",
+        "silverstripe/framework": "^6.2",
+        "silverstripe/cms": "^6.2",
         "silverstripe/vendor-plugin": "^3.0",
         "azt3k/abc-silverstripe": "dev-release/6"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0",
-        "silverstripe/recipe-cms": "^6.0"
+        "silverstripe/recipe-cms": "^6.2"
     },
     "autoload": {
         "psr-4": {
